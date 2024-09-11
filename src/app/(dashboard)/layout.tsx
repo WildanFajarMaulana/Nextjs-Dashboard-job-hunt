@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "../globals.css";
 import { Epilogue } from 'next/font/google'
 import Sidebar from "@/components/layouts/Sidebar";
 import Header from "@/components/layouts/Header";

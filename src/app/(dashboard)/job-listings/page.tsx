@@ -11,16 +11,34 @@ import {
 import { JOB_LISTING_COLUMN, JOB_LISTING_DATA } from "@/constants";
 import { Badge } from "@/components/ui/badge";
 import ButtonActionTable from "@/components/organisms/ButtonActionTable";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import prisma from "../../../../lib/prisma";
+import { Job } from "@prisma/client";
+import { dateFormat } from "@/lib/utils";
+import moment from "moment";
 
 interface JobListingsProps {}
 
-const JobListings: FC<JobListingsProps> = ({}) => {
+async function getDataJobs() {
+  const session = await getServerSession(authOptions);
+
+  const jobs = prisma.job.findMany({
+    where: {
+      companyId: session?.user.id,
+    },
+  });
+
+  return jobs;
+}
+
+const JobListings: FC<JobListingsProps> = async ({}) => {
+  const jobs = await getDataJobs();
   return (
     <div>
       <div className="font-semibold text-3xl">Job Listings</div>
       <div className="mt-10">
         <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader>
             <TableRow>
               {JOB_LISTING_COLUMN.map((item: string, i: number) => (
@@ -30,14 +48,18 @@ const JobListings: FC<JobListingsProps> = ({}) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {JOB_LISTING_DATA.map((item: any, i: number) => (
+            {jobs.map((item: Job, i: number) => (
               <TableRow key={item.roles + i}>
                 <TableCell>{item.roles}</TableCell>
                 <TableCell>
-                  <Badge>{item.status}</Badge>
+                  {moment(item.datePosted).isBefore(item.dueDate) ? (
+                    <Badge>Live</Badge>
+                  ) : (
+                    <Badge variant="destructive">Expired</Badge>
+                  )}
                 </TableCell>
-                <TableCell>{item.datePosted}</TableCell>
-                <TableCell>{item.dueDate}</TableCell>
+                <TableCell>{dateFormat(item.datePosted)}</TableCell>
+                <TableCell>{dateFormat(item.dueDate)}</TableCell>
                 <TableCell>
                   <Badge>{item.jobType}</Badge>
                 </TableCell>
@@ -46,7 +68,7 @@ const JobListings: FC<JobListingsProps> = ({}) => {
                   {item.applicants} / {item.needs}
                 </TableCell>
                 <TableCell>
-                  <ButtonActionTable url="/job-detail/1" />
+                  <ButtonActionTable url={`/job-detail/${item.id}`} />
                 </TableCell>
               </TableRow>
             ))}

@@ -46,7 +46,7 @@ const InputBenefits: FC<InputBenefitsProps> = ({ form }) => {
 						<div className="text-xl font-semibold mb-3">
 							{item.benefit}
 						</div>
-						<div className="text-gray-500 text-sm">
+						<div className="text-gray-500 text-sm overflow-hidden break-words">
 							{item.description}
 						</div>
 					</div>

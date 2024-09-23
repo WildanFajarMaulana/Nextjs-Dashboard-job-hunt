@@ -33,11 +33,25 @@ import CKEditor from "@/components/organisms/CKEditor";
 import InputBenefits from "@/components/organisms/InputBenefits";
 import { Button } from "@/components/ui/button";
 import TitleForm from "@/components/atoms/TitleForm";
+import useSWR from "swr";
+import { fetcher } from "@/lib/utils";
+import { CategoryJob } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import moment from "moment";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 interface PostJobPageProps {}
 
 const PostJobPage: FC<PostJobPageProps> = ({}) => {
+  const { data, error, isLoading } = useSWR<CategoryJob[]>(
+    "/api/job/categories",
+    fetcher
+  );
+  const { data: session } = useSession();
+  const router = useRouter();
   const [editorLoaded, setEditorLoaded] = useState<boolean>(false);
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof jobFormSchema>>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
@@ -46,8 +60,46 @@ const PostJobPage: FC<PostJobPageProps> = ({}) => {
     },
   });
 
-  const onSubmit = (val: z.infer<typeof jobFormSchema>) => {
-    console.log(jobFormSchema);
+  const onSubmit = async (val: z.infer<typeof jobFormSchema>) => {
+    try {
+      const body: any = {
+        applicants: 0,
+        benefits: JSON.stringify(val.benefits),
+        categoryId: val.categoryId,
+        companyId: session?.user.id!!,
+        datePosted: moment().toDate(),
+        description: val.jobDescription,
+        dueDate: moment().add(1, "M").toDate(),
+        jobType: val.jobType,
+        needs: 20,
+        niceToHaves: val.niceToHaves,
+        requiredSkills: val.requiredSkills,
+        responsibility: val.responsibility,
+        roles: val.roles,
+        salaryFrom: val.salaryFrom,
+        salaryTo: val.salaryTo,
+        whoYouAre: val.whoYouAre,
+      };
+
+      const response = await fetch("/api/job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create job");
+      }
+
+      await router.push("/job-listings");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error?.message || "Please try again",
+      });
+      console.log("Error details:", error);
+    }
   };
 
   useEffect(() => {
@@ -185,13 +237,11 @@ const PostJobPage: FC<PostJobPageProps> = ({}) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="m@example.com">
-                        m@example.com
-                      </SelectItem>
-                      <SelectItem value="m@google.com">m@google.com</SelectItem>
-                      <SelectItem value="m@support.com">
-                        m@support.com
-                      </SelectItem>
+                      {data?.map((item: any) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

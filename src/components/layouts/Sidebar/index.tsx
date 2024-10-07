@@ -26,35 +26,35 @@ const Sidebar: FC<SidebarProps> = ({}) => {
           <div className="space-y-3">
             <Button
               variant={"ghost"}
-              className="w-full justify-start rounded-none text-primary hover:text-primary"
+              className="w-full justify-start rounded-none text-black hover:text-primary"
             >
               <AiOutlineHome className="mr-2 text-lg" />
               Home
             </Button>
             <Button
               variant={"ghost"}
-              className="w-full justify-start rounded-none text-primary hover:text-primary"
+              className="w-full justify-start rounded-none text-black hover:text-primary"
             >
               <AiOutlineMessage className="mr-2 text-lg" />
               Messages
             </Button>
             <Button
               variant={"ghost"}
-              className="w-full justify-start rounded-none text-primary hover:text-primary"
+              className="w-full justify-start rounded-none text-black hover:text-primary"
             >
               <BsBuilding className="mr-2 text-lg" />
               Company Profile
             </Button>
             <Button
               variant={"ghost"}
-              className="w-full justify-start rounded-none text-primary hover:text-primary"
+              className="w-full justify-start rounded-none text-black hover:text-primary"
             >
               <AiOutlineUserAdd className="mr-2 text-lg" />
               All Aplicants
             </Button>
             <Button
               variant={"ghost"}
-              className="w-full justify-start rounded-none text-primary hover:text-primary"
+              className="w-full justify-start rounded-none text-black hover:text-primary"
               onClick={() => router.push("/job-listings")}
             >
               <HiOutlineClipboardList className="mr-2 text-lg" />
@@ -62,7 +62,7 @@ const Sidebar: FC<SidebarProps> = ({}) => {
             </Button>
             <Button
               variant={"ghost"}
-              className="w-full justify-start rounded-none text-primary hover:text-primary"
+              className="w-full justify-start rounded-none text-black hover:text-primary"
             >
               <AiOutlineCalendar className="mr-2 text-lg" />
               My Schedule
@@ -76,7 +76,7 @@ const Sidebar: FC<SidebarProps> = ({}) => {
           <Button
             onClick={() => router.push("/settings")}
             variant={"ghost"}
-            className="w-full justify-start rounded-none text-primary hover:text-primary"
+            className="w-full justify-start rounded-none text-black hover:text-primary"
           >
             <BsGear className="mr-2 text-lg" />
             Settings
